@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, request
-
+from repositorio import conexao, insert
 
 
 app = Flask(__name__)
@@ -14,11 +14,13 @@ def cadastro():
 
 @app.route('/salvar', methods=['post'])
 def salvar():
-    nome = request.form["first_name","last_name","cpf","email","phone"]
+    nome = request.form["first_name"]
     sobrenome = request.form["last_name"]
     cpf = request.form["cpf"]
     email = request.form["email"]
     telefone = request.form["phone"]
+    db = conexao()
+    insert(db, nome , sobrenome, cpf, email, telefone)
     return redirect('/cadastro')
 
 
