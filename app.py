@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, request
-from repositorio import conexao, insert
+from db_connection import conexao, insert
 
 
 app = Flask(__name__)
