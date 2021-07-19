@@ -10,10 +10,10 @@ def conexao():
     return db
 
 
-def insert(db, nome, sobrenome, cpf, email, telefone):
+def insert(db, purchaser_name, item_description, item_price, purchase_count, merchant_address, merchant_name):
     
-    comando_sql = "INSERT INTO CONTATOS (NOME, SOBRENOME, CPF, EMAIL, TELEFONE) VALUES (%s,%s,%s,%s,%s)"
-    valores = (nome, sobrenome, cpf, email, telefone)
+    comando_sql = "INSERT INTO VELOW (PURCHASER_NAME, ITEM_DESCRIPTION, ITEM_PRICE, PURCHASE_COUNT, MERCHANT_ADDRESS, MERCHANT_NAME) VALUES (%s,%s,%s,%s,%s,%s)"
+    valores = (purchaser_name, item_description, item_price, purchase_count, merchant_address, merchant_name)
     try:
         cursor = db.cursor()
         cursor.execute(comando_sql, valores)
