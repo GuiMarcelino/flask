@@ -8,9 +8,9 @@ app = Flask(__name__)
 def pagina_inicial():
     return render_template('index.html')
 
-@app.route('/cadastro', methods=['get'])
+@app.route('/upload', methods=['get'])
 def cadastro():
-    return render_template("cadastro.html")
+    return render_template("upload.html")
 
 @app.route('/salvar', methods=['post'])
 def salvar():
