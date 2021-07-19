@@ -9,7 +9,7 @@ def pagina_inicial():
     return render_template('index.html')
 
 @app.route('/upload', methods=['get'])
-def cadastro():
+def upload():
     return render_template("upload.html")
 
 @app.route('/salvar', methods=['post'])
