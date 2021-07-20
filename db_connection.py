@@ -19,6 +19,5 @@ def insert(db, purchaser_name, item_description, item_price, purchase_count, mer
         cursor.execute(comando_sql, valores)
         db.commit()
         cursor.close()
-        print(' novo contato inserido !!!')
     except:
         print('Contato não inserido.')
