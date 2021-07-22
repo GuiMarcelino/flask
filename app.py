@@ -1,30 +1,50 @@
-from flask import Flask, render_template, redirect, request, url_for
+from flask import Flask, render_template, redirect, request, url_for, flash
 from db_connection import conexao, insert
 from werkzeug.utils import secure_filename
-from flask import jsonify
 import os
+import csv
+
 
 app = Flask(__name__)
+UPLOAD_FOLDER = './uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = {'tab'}
 
+def allowed_file(filename):
+    # verificação de tipo de arquivo 
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS 
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods =['GET'])
 def pagina_inicial():
     return render_template('index.html')
 
-
-@app.route('/upload/', methods=['POST', 'GET'])
+@app.route('/upload/', methods=['POST','GET'])
 def upload():
-    if request.method == "GET":
-        return render_template('upload.html')
+        if request.method == "POST":
 
-    elif request.method == "POST":
-        row = request.files['tabfile'].readlines()
-        lines = []
-        for index in row(0, len(row), 1):
-            index.decode('utf8').replace('\n', '').split('\t')
-            lines.append(index)
+            if 'tabfile' not in request.files:
+                flash('No file part') # flash retorna uma valor de forma rapida 
+                return redirect(request.url)
+            file = request.files['tabfile']
+            if file.filename == '':
+                flash('No selected file')
+                return redirect(request.url)
+            if file and allowed_file(file.filename):
+                
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                with open(f"{app.config['UPLOAD_FOLDER']}/{filename}", 'r') as file: 
+                    for line in csv.reader(file,dialect='excel-tab'):
+                        print(line)
+                return redirect(url_for('upload', name=filename))
 
-        return jsonify(lines)
+
+        elif request.method == "GET":
+            return render_template('upload.html')
+
+
+
 
 
 @app.route('/salvar', methods=['GET, POST'])
@@ -42,3 +62,4 @@ def salvar():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
