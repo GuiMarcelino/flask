@@ -4,50 +4,51 @@ from werkzeug.utils import secure_filename
 import os
 import csv
 
-
 app = Flask(__name__)
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'tab'}
 
+
 def allowed_file(filename):
     # verificação de tipo de arquivo 
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS 
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/', methods=['POST','GET'])
+@app.route('/', methods=['POST', 'GET'])
 def upload():
-        if request.method == "POST":
-            if 'tabfile' not in request.files:
-                flash('No file part') # flash retorna uma valor de forma rapida 
-                return redirect(request.url)
-            file = request.files['tabfile']
-            if file.filename == '':
-                flash('No selected file')
-                return redirect(request.url)
-            if file and allowed_file(file.filename):
-                
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                with open(f"{app.config['UPLOAD_FOLDER']}/{filename}", 'r') as file:
+    if request.method == "POST":
+        if 'tabfile' not in request.files:
+            flash('No file part')  # flash retorna uma valor de forma rapida
+            return redirect(request.url)
+        file = request.files['tabfile']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
 
-                    index = 0
-                    for line in csv.reader(file, dialect='excel-tab'):
-                        if index == 0:
-                            index += 1
-                        else:
-                            salvar(line)
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            with open(f"{app.config['UPLOAD_FOLDER']}/{filename}", 'r') as file:
 
-                return redirect(url_for('upload', name=filename))
+                index = 0
+
+                for line in csv.reader(file, dialect='excel-tab'):
+                    if index == 0:
+                        index += 1
+
+                    else:
+                        salvar(line)
+
+            return redirect(url_for('upload', name=filename))
 
 
-        elif request.method == "GET":
-            return render_template('upload.html')
+    elif request.method == "GET":
+        return render_template('upload.html')
 
 
 def salvar(line):
-
     purchaser_name = line[0]
     item_descripion = line[1]
     item_price = line[2]
@@ -57,6 +58,6 @@ def salvar(line):
     db = conexao()
     insert(db, purchaser_name, item_descripion, item_price, purchaser_count, merchant_address, merchant_name)
 
+
 if __name__ == '__main__':
     app.run(debug=True)
-
