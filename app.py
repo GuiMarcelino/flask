@@ -15,14 +15,10 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS 
 
-@app.route('/', methods =['GET'])
-def pagina_inicial():
-    return render_template('index.html')
 
-@app.route('/upload/', methods=['POST','GET'])
+@app.route('/', methods=['POST','GET'])
 def upload():
         if request.method == "POST":
-
             if 'tabfile' not in request.files:
                 flash('No file part') # flash retorna uma valor de forma rapida 
                 return redirect(request.url)
@@ -34,9 +30,15 @@ def upload():
                 
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                with open(f"{app.config['UPLOAD_FOLDER']}/{filename}", 'r') as file: 
-                    for line in csv.reader(file,dialect='excel-tab'):
-                        print(line)
+                with open(f"{app.config['UPLOAD_FOLDER']}/{filename}", 'r') as file:
+
+                    index = 0
+                    for line in csv.reader(file, dialect='excel-tab'):
+                        if index == 0:
+                            index += 1
+                        else:
+                            salvar(line)
+
                 return redirect(url_for('upload', name=filename))
 
 
@@ -44,21 +46,16 @@ def upload():
             return render_template('upload.html')
 
 
+def salvar(line):
 
-
-
-@app.route('/salvar', methods=['GET, POST'])
-def salvar():
-    id = request.form["id"]
-    purchaser_name = request.form["purchaser_name"]
-    item_descripion = request.form["item_descripion"]
-    item_price = request.form["item_price"]
-    merchant_address = request.form["merchant_address"]
-    merchant_name = request.form["merchant_name"]
+    purchaser_name = line[0]
+    item_descripion = line[1]
+    item_price = line[2]
+    purchaser_count = line[3]
+    merchant_address = line[4]
+    merchant_name = line[5]
     db = conexao()
-    insert(db, id, purchaser_name, item_descripion, item_price, merchant_address, merchant_name)
-    return redirect('/upload')
-
+    insert(db, purchaser_name, item_descripion, item_price, purchaser_count, merchant_address, merchant_name)
 
 if __name__ == '__main__':
     app.run(debug=True)
