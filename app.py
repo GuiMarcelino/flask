@@ -1,5 +1,6 @@
+import re
 from flask import Flask, render_template, redirect, request, url_for, flash
-from db_connection import conexao, insert
+from db_connection import calc, conexao, insert
 from werkzeug.utils import secure_filename
 import os
 import csv
@@ -11,7 +12,7 @@ ALLOWED_EXTENSIONS = {'tab'}
 
 
 def allowed_file(filename):
-    # verificação de tipo de arquivo 
+
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -43,7 +44,6 @@ def upload():
 
             return redirect(url_for('upload', name=filename))
 
-
     elif request.method == "GET":
         return render_template('upload.html')
 
@@ -58,6 +58,13 @@ def salvar(line):
     db = conexao()
     insert(db, purchaser_name, item_descripion, item_price, purchaser_count, merchant_address, merchant_name)
 
+@app.route('/resultado', methods=['GET'])
+def result():
+    db = conexao()
+    resultado = calc(db)
+    print(type(resultado))
+    return render_template('resultado.html', resultado_no_html=resultado)
+    
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -26,7 +26,8 @@ def insert(db, purchaser_name, item_description, item_price, purchase_count, mer
 def calc(db):
     cursor = db.cursor()
     cursor.execute("SELECT SUM(ITEM_PRICE*PURCHASE_COUNT) FROM VENDAS")
-    resultado_calc = cursor.fetchall()
-    print(resultado_calc)
+    resultado_calc = cursor.fetchone()
     cursor.close()
-    return f'Valor total Bruto:{resultado_calc}'
+    for index in resultado_calc:
+        value = index
+        return f'Valor total Bruto R${value}'
