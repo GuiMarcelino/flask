@@ -6,7 +6,7 @@ import os
 import csv
 
 app = Flask(__name__)
-UPLOAD_FOLDER = './uploads'
+UPLOAD_FOLDER = os.path.dirname(os.path.realpath(__file__))
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'tab'}
 
@@ -42,7 +42,7 @@ def upload():
                     else:
                         salvar(line)
 
-            return redirect(url_for('upload', name=filename))
+            return redirect('/resultado')
 
     elif request.method == "GET":
         return render_template('upload.html')
